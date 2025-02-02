@@ -1,0 +1,104 @@
+html, body {
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    display: flex;
+    flex: 1 1 auto;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #fff;
+}
+h1 a {
+    color: #fff;
+    text-decoration: none;
+}
+a.green-link {
+    color: rgb(0, 161, 0);
+    text-decoration: none;
+    border: 2px solid rgb(0, 161, 0);
+    padding: 4px 15px;
+    border-radius: 5px;
+    font-size: 16px;
+}
+body {
+    background-image: url('/static/images/wooden-textured-background.jpg');
+    background-position: center;
+    flex-direction: column;
+}
+header, footer {
+    display: flex;
+    padding: 10px 160px;
+    background-color: #242424;
+    flex: 0 0 auto;
+    align-items: baseline;
+}
+header {
+    justify-content: space-between;
+}
+footer * {
+    margin-right: 15px;
+}
+.wrapper {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+}
+.home {
+    display: flex;
+    justify-content: center;
+}
+.start-game-card {
+    background-color: rgba(32, 32, 32, 0.8);
+    padding: 35px;
+    padding-top: 0;
+    border-radius: 10px;
+    margin-top: 25px;
+}
+#start-game-form-inputs {
+    display: none;
+}
+.players-count-visual {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+}
+.players-group {
+    border: 2px #fff solid;
+    border-radius: 20px;
+    padding: 30px 50px;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.3s ease 0s all;
+}
+.players-group img {
+    width: 50px;
+    height: 50px;
+}
+.players-group:hover {
+    background-color: rgba(35, 63, 24, 0.8);
+}
+.players-group.selected {
+    background-color: rgba(35, 63, 24, 0.8);
+    border-color: rgba(103, 173, 75, 0.8);
+}
+.submit-button {
+    background-color: #ce8d38;
+    width: 100%;
+    font-size: 20px;
+    border-radius: 10px;
+    border: none;
+    font-weight: bold;
+    padding: 10px 0;
+    cursor: pointer;
+    color: #fff;
+}
+.start-game-card .submit-button {
+    margin-top: 20px;
+}
+.name-input {
+    margin-top: 10px;
+}
+.name-input input {
+    width: 99%;
+    padding: 5px 3px;
+    font-size: 14px;
+}

@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Play Durak Online!{% endblock %}
+
+{% block content %}
+    <div class="home">
+        <div class="start-game-card">
+            <form action="" method="post">
+                {% csrf_token %}
+                <h2>How many players?</h2>
+                <div class="players-count-visual">
+                    <div class="players-group selected" data-pointing-input="players_count-2">
+                        <img src="{% static 'images/group-of-2.png' %}" alt="2 players"><br>
+                        <span>2 players</span>
+                    </div>
+                    <div class="players-group" data-pointing-input="players_count-3">
+                        <img src="{% static 'images/group-of-3.png' %}" alt="3 players"><br>
+                        <span>3 players</span>
+                    </div>
+                    <div class="players-group" data-pointing-input="players_count-4">
+                        <img src="{% static 'images/group-of-4.png' %}" alt="4 players"><br>
+                        <span>4 players</span>
+                    </div>
+                </div>
+
+                <div id="start-game-form-inputs">
+                    <input type="radio" name="players_count" id="players_count-2" value="2" checked>
+                    <input type="radio" name="players_count" id="players_count-3" value="3">
+                    <input type="radio" name="players_count" id="players_count-4" value="4">
+                </div>
+
+                {% if not user.is_authenticated %}
+                    <div class="name-input">
+                        How do you want to be called? <br>
+                        <input type="text" name="username" placeholder="Your Name">
+                    </div>
+                {% endif %}
+
+                <input type="submit" value="Start game" class="submit-button">
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        // custom selection for players count
+        document.querySelectorAll('.players-group').forEach(b => {
+            b.addEventListener('click', (e) => { // bind every .players-group to click event
+                const radioInputId = '#' + b.getAttribute('data-pointing-input'); // construct id of radio input
+           
+
+                let radio = document.querySelector(radioInputId); // get radio input
+                if (radio.checked) return; // if input is already checked => skip
+
+                document.querySelectorAll('input[name="players_count"]').forEach(input => { // uncheck all inputs
+                    input.removeAttribute('checked')
+                   
+                })
+                radio.setAttribute('checked', 1); // check selected
+
+                document.querySelectorAll('.players-group').forEach(group => { // remove .selected class from all clickables
+                    group.classList.remove('selected');
+                })
+                b.classList.add('selected'); // add class to selected
+            })
+        })
+    </script>
+{% endblock %}
