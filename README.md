@@ -29,4 +29,4 @@ python manage.py runserver
 ## 🎮 How to Play
 1. Open the game in your browser.
 2. Join waiting room with desired players count.
-3. Play turns in real-time.
+3. Play turns in real-time. (Rules: [Wikipedia en](https://en.wikipedia.org/wiki/Durak), [Wikipedia pl](https://pl.wikipedia.org/wiki/Dure%C5%84))
