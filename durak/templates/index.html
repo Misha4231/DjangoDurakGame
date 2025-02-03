@@ -29,11 +29,13 @@
                     <input type="radio" name="players_count" id="players_count-3" value="3">
                     <input type="radio" name="players_count" id="players_count-4" value="4">
                 </div>
-
+                {% if error_msg %}
+                    <p>{{ error_msg }}</p>
+                {% endif %}
                 {% if not user.is_authenticated %}
                     <div class="name-input">
                         How do you want to be called? <br>
-                        <input type="text" name="username" placeholder="Your Name">
+                        <input type="text" name="username" placeholder="Your Name" required>
                     </div>
                 {% endif %}
 
