@@ -37,18 +37,22 @@ def index(request: HttpRequest):
         player.save()
         
         # Redirect the player to the waiting room
-        response = redirect('waiting_room', room_id=available_room.id)
+        response = redirect('waiting_room')
         response.set_cookie('player_id', player.id, max_age=7200, httponly=True) # Store the player's ID in a secure cookie (valid for 2 hours)
         
         return response
     
-def waiting_room(request: HttpRequest, room_id: uuid):
+def waiting_room(request: HttpRequest):
     player_id = request.COOKIES.get('player_id') # Retrieve the player's id from cookies
     if not player_id: # If no player ID is found in cookies, redirect to the index page
         return redirect('index')
     
-    player = Player.objects.filter(id=player_id).first() # Fetch the player from the database using the stored ID
-    if not player or player.room.id != room_id: # redirect to index if the player doesn't exist or is not in the correct room
+    player = Player.objects.select_related("room").filter(id=player_id).first() # Fetch the player from the database using the stored ID
+    if not player: # redirect to index if the player doesn't exist or is not in the correct room
         return redirect('index')
     
-    return render(request, 'waiting_room.html', {'room_id': room_id})
+    return render(request, 'waiting_room.html', {'max_players_count': player.room.max_players_count})
+
+
+def start_durakgame(request):
+    return None

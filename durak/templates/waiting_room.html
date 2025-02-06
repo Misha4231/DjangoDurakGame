@@ -5,9 +5,16 @@
 
 
 {% block content %}
-    
+    <div class="waiting-room">
+        <div class="waiting-room-card">
+            <div class="loader"></div>
+            <h2>Waiting for players... (<span id="connected_players_count">1</span>/<span id="max_players_count">{{ max_players_count }}</span>)</h2>
+
+            <button class="cancel-button">Leave room</button>
+        </div>
+    </div>
 {% endblock %}
 
 {% block script %}
-    
+    <script src="{% static 'script/waiting_room.js' %}"></script>
 {% endblock %}

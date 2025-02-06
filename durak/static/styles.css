@@ -19,6 +19,28 @@ a.green-link {
     border-radius: 5px;
     font-size: 16px;
 }
+.submit-button {
+    background-color: #ce8d38;
+    width: 100%;
+    font-size: 20px;
+    border-radius: 10px;
+    border: none;
+    font-weight: bold;
+    padding: 10px 0;
+    cursor: pointer;
+    color: #fff;
+}
+.cancel-button {
+    background-color: #ce3838;
+    width: 100%;
+    font-size: 20px;
+    border-radius: 10px;
+    border: none;
+    font-weight: bold;
+    padding: 10px 0;
+    cursor: pointer;
+    color: #fff;
+}
 body {
     background-image: url('/static/images/wooden-textured-background.jpg');
     background-position: center;
@@ -80,17 +102,6 @@ footer * {
     background-color: rgba(35, 63, 24, 0.8);
     border-color: rgba(103, 173, 75, 0.8);
 }
-.submit-button {
-    background-color: #ce8d38;
-    width: 100%;
-    font-size: 20px;
-    border-radius: 10px;
-    border: none;
-    font-weight: bold;
-    padding: 10px 0;
-    cursor: pointer;
-    color: #fff;
-}
 .start-game-card .submit-button {
     margin-top: 20px;
 }
@@ -102,3 +113,40 @@ footer * {
     padding: 5px 3px;
     font-size: 14px;
 }
+
+.waiting-room {
+    display: flex;
+    justify-content: center;
+}
+.waiting-room-card {
+    background-color: rgba(32, 32, 32, 0.8);
+    padding: 35px;
+    border-radius: 10px;
+    margin-top: 25px;
+    text-align: center;
+}
+/* taken from css-loaders.com */
+.loader {
+    display: inline-flex;
+    gap: 10px;
+  }
+  .loader:before,
+  .loader:after {
+    content: "";
+    height: 20px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background:
+      radial-gradient(farthest-side,#000 95%,#0000) 35% 35%/6px 6px no-repeat
+      #fff;
+    animation: l5 3s infinite;
+  }
+  @keyframes l5 {
+    0%,11%   {background-position:35% 35%}
+    14%,36%  {background-position:65% 35%}
+    38%,61%  {background-position:65% 65%}
+    64%,86%  {background-position:35% 65%}
+    88%,100% {background-position:35% 35%}
+  }
+/* ===================== */
+

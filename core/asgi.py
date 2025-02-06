@@ -16,13 +16,13 @@ from django.core.asgi import get_asgi_application
 
 django_asgi_app = get_asgi_application()
 
-from channels.auth import AuthMiddlewareStack
+from durak.middleware import PlayerAuthMiddleware
 import durak.routing
 
 
 application = ProtocolTypeRouter({
     'http': django_asgi_app,
-    'websocket': AuthMiddlewareStack(
+    'websocket': PlayerAuthMiddleware( # custom auth middleware to know what user is connecting
         URLRouter(
            durak.routing.websocket_urlpatterns
         )
