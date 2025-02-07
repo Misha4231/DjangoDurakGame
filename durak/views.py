@@ -55,4 +55,4 @@ def waiting_room(request: HttpRequest):
 
 
 def start_durakgame(request):
-    return None
+    return render(request, 'durak_game.html')
