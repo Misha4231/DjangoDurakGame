@@ -35,22 +35,22 @@ class Deck:
 
         return self.__deck.pop()
 
-    def to_json(self):
+    def to_json(self, sensible_data = False):
         data = {
-            'deck': list([str(c) for c in reversed(self.__deck)]),
+            'length': self.cards_available(),
             'trump': str(self.__trump),
         }
+        if not sensible_data: # if data is for example for database storing, then add all cards
+            data['deck'] = [str(c) for c in reversed(self.__deck)]
 
-        return json.dumps(data)
+        return data
 
     def __str__(self) -> str:
         data = self.to_json()
         return str(data)
 
     @classmethod
-    def from_string(cls, data: str):
-        data = json.loads(data)
-
+    def from_json(cls, data: dict):
         deck = data['deck']
         trump = Card.from_string(data['trump'])
 

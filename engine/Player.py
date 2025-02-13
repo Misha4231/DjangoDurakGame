@@ -4,11 +4,13 @@ from .Card import *
 
 
 class Player:
-    def __init__(self, name: str, player_id: str):
+    def __init__(self, name: str, player_id: str, hand=None):
+        if hand is None:
+            hand = []
         self.player_name: str = name
         self.__id: str = player_id
 
-        self.__hand: list[Card] = []
+        self.__hand: list[Card] = [Card.from_string(c) for c in hand]
 
     def get_id(self) -> str:
         return self.__id
@@ -31,20 +33,22 @@ class Player:
     def have_card(self, card: Card) -> bool:
         return card in self.__hand
 
-    def to_json(self):
+
+    def to_json(self, player_id = None): # convert user data to dict
         data = {
             'id': self.get_id(),
             'name': self.get_name(),
+            'hand_len': self.hands_len(),
         }
+        if player_id is None or player_id == self.get_id():
+            data['hand'] = [str(c) for c in self.get_hand()]
 
-        return json.dumps(data)
+        return data
 
     def __str__(self):
         data = self.to_json()
         return str(data)
 
     @classmethod
-    def from_str(cls, data: str):
-        data = json.loads(data)
-
-        return cls(data['id'], data['name'])
+    def from_json(cls, data: dict):
+        return cls(data['id'], data['name'], data['hand'])

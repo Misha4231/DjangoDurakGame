@@ -156,40 +156,55 @@ class Table:
 
         return None
 
-    def to_json(self):
+
+    def to_safejson(self, player_id: str): # convert to json excluding sensible fields like every player's hand
         data = {
-            "deck": self.deck.to_json(),
-            "players": [p.to_json() for p in self.players],
-            'winners': [p.to_json()  for p in self.winners],
-            "attack_state": [json.dumps([str(bottom_c), str(top_c)]) for top_c, bottom_c in self.attack_state.items()],
+            "deck": self.deck.to_json(sensible_data=True),
+            "players": [p.to_json(player_id) for p in self.players],
+            'winners': [p.to_json(player_id) for p in self.winners],
+            "attack_state": [[str(bottom_c), str(top_c)] for top_c, bottom_c in self.attack_state.items()],
             "attacks_number": self.attacks_number,
             "turn": self.get_turn(),
             'next_turn': self.get_next_turn(),
             "refill_players_order": [p.to_json() for p in self.refill_players_order.keys()],
         }
 
-        return json.dumps(data)
+        return data
+
+    def to_json(self): # convert table to dictionary to store in database
+        data = {
+            "deck": self.deck.to_json(),
+            "players": [p.to_json() for p in self.players],
+            'winners': [p.to_json()  for p in self.winners],
+            "attack_state": [[str(bottom_c), str(top_c)] for top_c, bottom_c in self.attack_state.items()],
+            "attacks_number": self.attacks_number,
+            "turn": self.get_turn(),
+            'next_turn': self.get_next_turn(),
+            "refill_players_order": [p.to_json() for p in self.refill_players_order.keys()], # keys only, because dict is used as ordered set
+        }
+
+        return data
 
     def __str__(self):
         return str(self.to_json())
 
     @classmethod
-    def from_str(cls, data: str):
-        print(data)
-        data = json.loads(data)
+    def from_json(cls, data: (str | dict)): # initialize table with data from database
+        if type(data) is str:
+            data = json.loads(data)
 
-        players = [Player.from_str(p) for p in data["players"]] # recreate players
+        players = [Player.from_json(p) for p in data["players"]] # recreate players
         table = cls(players) # construct table
 
-        table.deck = Deck.from_string(data["deck"]) # recreate deck
-        table.winners = [Player.from_str(p) for p in data["winners"]] # recreate winners
+        table.deck = Deck.from_json(data["deck"]) # recreate deck
+        table.winners = [Player.from_json(p) for p in data["winners"]] # recreate winners
         table.attack_state = {
             Card.from_string(state[0]): Card.from_string(state[1]) for state in data["attack_state"]
         } # recreate attack state
         table.attacks_number = data["attacks_number"]
         table.__turn = data["turn"]
         table.refill_players_order = {
-            Player.from_str(p): None for p in data["refill_players_order"]
+            Player.from_json(p): None for p in data["refill_players_order"]
         }
 
         return table
