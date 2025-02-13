@@ -1,10 +1,26 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Game{% endblock %}
 
 {% block content %}
+    <div class="game-table">
+        {% for p in indexed_players %}
+            {% if p.id != player.id %}
+                <div class="player-wrapper" id="player-{{ p.index }}-wrapper">
+                    <h3 class="player-name">{{ p.player }}</h3>
+                    <div class="player-hand"></div>
+                </div>
+            {% endif %}
+        {% endfor %}
 
+        <div class="player-wrapper" id="player-me-wrapper">
+            <h3 class="player-name">{{ player }}</h3>
+            <div class="player-hand"></div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block script %}
+    <script src="{% static 'script/game.js' %}"></script>
 {% endblock %}

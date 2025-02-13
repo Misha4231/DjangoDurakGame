@@ -1,6 +1,9 @@
 from django.shortcuts import render, redirect
 from django.http import HttpRequest, HttpResponseBadRequest, HttpResponse
+
 from .models import *
+import engine.Table as EngineTable
+import engine.Player as EnginePlayer
 
 # home page where user can choose players count and join appropriate waiting room
 def index(request: HttpRequest):
@@ -28,31 +31,56 @@ def index(request: HttpRequest):
         player = None
         if request.user.is_authenticated:  # If the user is authenticated, create a Player entry linked to their user account
             player = Player(user=request.user, anonymous_user=None, room=available_room)
-        else: # If the user is anonymous, create an temporary AnonymousUser profile
-            anonymus_profile = AnonymousUser(name=request.POST['username'])
-            anonymus_profile.save()
+        else: # If the user is anonymous, create a temporary AnonymousUser profile
+            anonymous_profile = AnonymousUser(name=request.POST['username'])
+            anonymous_profile.save()
             
-            player = Player(user=None, anonymous_user=anonymus_profile, room=available_room)
+            player = Player(user=None, anonymous_user=anonymous_profile, room=available_room)
             
         player.save()
         
         # Redirect the player to the waiting room
         response = redirect('waiting_room')
-        response.set_cookie('player_id', player.id, max_age=7200, httponly=True) # Store the player's ID in a secure cookie (valid for 2 hours)
+        response.set_cookie('player_id', str(player.id), max_age=7200, httponly=True) # Store the player's ID in a secure cookie (valid for 2 hours)
         
         return response
-    
+
+def get_valid_player(request: HttpRequest) -> (Player | None): # helper function to retrieve and validate the player from cookies
+    player_id = request.COOKIES.get('player_id')  # Retrieve the player's id from cookies
+    if not player_id:  # If no player ID is found in cookies
+        return None
+
+    player = Player.objects.select_related("room").filter(id=player_id).first()  # Fetch the player from the database using the stored ID
+    return player
+
 def waiting_room(request: HttpRequest):
-    player_id = request.COOKIES.get('player_id') # Retrieve the player's id from cookies
-    if not player_id: # If no player ID is found in cookies, redirect to the index page
-        return redirect('index')
-    
-    player = Player.objects.select_related("room").filter(id=player_id).first() # Fetch the player from the database using the stored ID
+    player = get_valid_player(request)
     if not player: # redirect to index if the player doesn't exist or is not in the correct room
         return redirect('index')
     
     return render(request, 'waiting_room.html', {'max_players_count': player.room.max_players_count})
 
-
 def start_durakgame(request):
-    return render(request, 'durak_game.html')
+    player = get_valid_player(request)
+    if not player:  # redirect to index if the player doesn't exist or is not in the correct room
+        return redirect('index')
+
+    room = player.room
+    players = Player.objects.filter(room=room).all() # all players
+
+    # construct list of players for engine
+    engine_players: list[EnginePlayer.Player] = []
+    for p in players:
+        p = EnginePlayer.Player(str(p), str(p.id))
+        engine_players.append(p)
+    # create table object
+    table = EngineTable.Table(engine_players)
+
+    # save table state to database
+    room.game_state = table.to_json()
+    room.save()
+
+    indexed_players = [
+        {"player": p, "index": i} for i, p in enumerate([p for p in players if p.id != player.id])
+    ]
+    return render(request, 'durak_game.html', {'room': room, 'indexed_players': indexed_players, 'player': player})

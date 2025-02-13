@@ -15,7 +15,7 @@ class Room(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False) #uuid instead of integer to prevent random user joining the room
     max_players_count = models.IntegerField(default=2)
     is_waiting = models.BooleanField(default=True) # room waiting until it fulls and game starts
-    
+    game_state = models.JSONField(default=dict)
     
 # Model to represent a player (either authenticated or anonymous)
 class Player(models.Model):

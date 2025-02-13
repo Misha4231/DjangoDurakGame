@@ -150,3 +150,50 @@ footer * {
   }
 /* ===================== */
 
+.game-table {
+    height: 100%;
+    width: 100%;
+    position: relative;
+}
+.player-wrapper {
+    height: 200px;
+    width: 200px;
+    position: absolute;
+}
+.player-hand {
+    display: flex;
+}
+
+ /* top */
+.game-table #player-0-wrapper {
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+}
+.game-table #player-0-wrapper .player-hand {
+    rotate: 180deg;
+}
+ /* left */
+.game-table #player-1-wrapper {
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+}
+.game-table #player-1-wrapper .player-hand {
+    rotate: 90deg;
+}
+ /* right */
+.game-table #player-2-wrapper {
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+}
+.game-table #player-2-wrapper .player-hand {
+    rotate: -90deg;
+}
+ /* bottom */
+.game-table #player-me-wrapper {
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+}
