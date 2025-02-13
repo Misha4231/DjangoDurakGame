@@ -1,4 +1,6 @@
-from Card import *
+import json
+
+from .Card import *
 
 
 class Player:
@@ -28,3 +30,21 @@ class Player:
 
     def have_card(self, card: Card) -> bool:
         return card in self.__hand
+
+    def to_json(self):
+        data = {
+            'id': self.get_id(),
+            'name': self.get_name(),
+        }
+
+        return json.dumps(data)
+
+    def __str__(self):
+        data = self.to_json()
+        return str(data)
+
+    @classmethod
+    def from_str(cls, data: str):
+        data = json.loads(data)
+
+        return cls(data['id'], data['name'])

@@ -1,5 +1,7 @@
-from Deck import *
-from Player import *
+import json
+
+from .Deck import *
+from .Player import *
 
 class Table:
     def __init__(self, players: list[Player]):
@@ -18,9 +20,6 @@ class Table:
         for player in self.players:
             for _ in range(0, 6):
                 player.take_card(self.deck.take_card())
-
-
-        self.turn = 0 # index of the player who plays turn first
 
         # select player who plays turn first (the one with the least ranked trump card)
         self.__turn = 0  # default first player
@@ -150,10 +149,58 @@ class Table:
                 self.winners.append(player)
                 self.players.remove(player)
 
-
     def search_player(self, player_id: str): # search the player with given id
         for player in self.players:
             if player.get_id() == player_id:
                 return player
 
         return None
+
+    def to_json(self):
+        data = {
+            "deck": self.deck.to_json(),
+            "players": [p.to_json() for p in self.players],
+            'winners': [p.to_json()  for p in self.winners],
+            "attack_state": [json.dumps([str(bottom_c), str(top_c)]) for top_c, bottom_c in self.attack_state.items()],
+            "attacks_number": self.attacks_number,
+            "turn": self.get_turn(),
+            'next_turn': self.get_next_turn(),
+            "refill_players_order": [p.to_json() for p in self.refill_players_order.keys()],
+        }
+
+        return json.dumps(data)
+
+    def __str__(self):
+        return str(self.to_json())
+
+    @classmethod
+    def from_str(cls, data: str):
+        print(data)
+        data = json.loads(data)
+
+        players = [Player.from_str(p) for p in data["players"]] # recreate players
+        table = cls(players) # construct table
+
+        table.deck = Deck.from_string(data["deck"]) # recreate deck
+        table.winners = [Player.from_str(p) for p in data["winners"]] # recreate winners
+        table.attack_state = {
+            Card.from_string(state[0]): Card.from_string(state[1]) for state in data["attack_state"]
+        } # recreate attack state
+        table.attacks_number = data["attacks_number"]
+        table.__turn = data["turn"]
+        table.refill_players_order = {
+            Player.from_str(p): None for p in data["refill_players_order"]
+        }
+
+        return table
+
+
+
+"""
+p1 = Player('ASd', 'asd')
+p2 = Player('ASasdd', 'asdasd')
+t = Table([p1, p2])
+t_str = t.to_json()
+print(Table.from_str(t_str))
+"""
+
