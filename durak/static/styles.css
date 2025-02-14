@@ -154,55 +154,87 @@ footer * {
     height: 100%;
     width: 100%;
     position: relative;
+    display: flex;
+    justify-content: center;
+    align-content: center;
 }
 .player-wrapper {
-    height: 200px;
-    width: 200px;
     position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .player-hand {
     display: flex;
 }
-
+.player-wrapper .player-name {
+    position: absolute;
+}
  /* top */
 .game-table #player-0-wrapper {
-    top: 0;
+    top: 10px;
     left: 50%;
     transform: translateX(-50%);
+    flex-direction: column;
 }
-.game-table #player-0-wrapper .player-hand {
-    rotate: 180deg;
+.game-table #player-0-wrapper .player-name {
+    top: 110px;
 }
  /* left */
 .game-table #player-1-wrapper {
     top: 50%;
-    left: 0;
+    left: 40px;
     transform: translateY(-50%);
+    flex-direction: row;
 }
-.game-table #player-1-wrapper .player-hand {
-    rotate: 90deg;
+.game-table #player-1-wrapper .player-name {
+    left: 110px;
 }
  /* right */
 .game-table #player-2-wrapper {
     top: 50%;
-    right: 0;
+    right: 120px;
     transform: translateY(-50%);
+    flex-direction: row;
 }
-.game-table #player-2-wrapper .player-hand {
-    rotate: -90deg;
+.game-table #player-2-wrapper .player-name {
+    right: 50px;
 }
  /* bottom */
 .game-table #player-me-wrapper {
-    bottom: 0;
+    bottom: 140px;
     left: 50%;
     transform: translateX(-50%);
+    flex-direction: column;
+}
+.game-table #player-me-wrapper .player-name {
+    bottom: 5px;
 }
 
 #deck {
     position: absolute;
-    right: 400px;
-    top: 25px;
+    right: 16%;
 }
 img.play-card {
-    width: 200px;
+    width: 80px;
+    z-index: 1;
+}
+.game-table #player-me-wrapper img.play-card {
+    cursor: pointer;
+}
+img.play-card.selected-card {
+    z-index: 2;
+    border: 3px orange dashed;
+}
+
+#play-zone {
+    width: 65%;
+    height: 45%;
+    background-color: rgb(126, 126, 126, 0.3);
+    margin: auto;
+    border: #242424 2px dashed;
+}
+#play-zone.highlighted {
+    background-color: rgba(172, 169, 169, 0.3);
+    border: #cdb833 2px dashed;
 }

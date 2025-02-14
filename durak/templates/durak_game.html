@@ -6,20 +6,23 @@
 {% block content %}
     <div class="game-table">
         {% for p in indexed_players %}
-            {% if p.id != player.id %}
-                <div class="player-wrapper" id="player-{{ p.index }}-wrapper">
-                    <h3 class="player-name">{{ p.player }}</h3>
-                    <div class="player-hand"></div>
-                </div>
-            {% endif %}
+            <div class="player-wrapper" id="player-{{ p.index }}-wrapper" data-id="{{ p.player.id }}">
+                <div class="player-hand"></div>
+                <h3 class="player-name">{{ p.player }}</h3>
+            </div>
         {% endfor %}
 
         <div id="deck">
+            <h2>Deck</h2>
         </div>
 
-        <div class="player-wrapper" id="player-me-wrapper">
-            <h3 class="player-name">{{ player }}</h3>
+        <div class="player-wrapper" id="player-me-wrapper" data-id="{{ player.id }}">
+            <h3 class="player-name">You</h3>
             <div class="player-hand"></div>
+        </div>
+
+        <div id="play-zone">
+
         </div>
     </div>
 {% endblock %}
