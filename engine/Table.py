@@ -4,7 +4,17 @@ from .Deck import *
 from .Player import *
 
 class Table:
-    def __init__(self, players: list[Player]):
+    def __init__(self, players: list[Player] = None):
+        if players is None: # default constructor
+            self.deck = None
+            self.players = None
+            self.winners = None
+            self.attack_state = None
+            self.refill_players_order = None
+            self.__turn = None
+
+            return
+
         self.deck = Deck() # deck laying on table
 
         if len(players) < 2 or len(players) > 4: # validate players count
@@ -23,13 +33,12 @@ class Table:
 
         # select player who plays turn first (the one with the least ranked trump card)
         self.__turn = 0  # default first player
-        self.trump_suit = self.deck.get_trump().get_suit()
         least_trump = None  # Track the lowest trump card rank
         turn_candidate = None  # Track which player has the lowest trump card
 
         for playerIdx, player in enumerate(self.players):
             for card in player.get_hand():
-                if card.get_suit() == self.trump_suit:
+                if card.get_suit() == self.deck.get_trump().get_suit():
                     if least_trump is None or card.get_rank().value < least_trump.value:
                         least_trump = card.get_rank()
                         turn_candidate = playerIdx
@@ -74,7 +83,7 @@ class Table:
         if defender_card.get_suit() == bottom_card.get_suit():
             if defender_card.get_rank().value < bottom_card.get_rank().value:
                 raise ValueError("Defender card has lower rank than the bottom one.")
-        elif defender_card.get_suit() != self.trump_suit and bottom_card.get_suit() == self.trump_suit:
+        elif defender_card.get_suit() != self.deck.get_trump().get_suit() and bottom_card.get_suit() == self.deck.get_trump().get_suit():
             raise ValueError("Can't beat trump suited card with no trump card.")
 
         # put card on table
@@ -193,9 +202,9 @@ class Table:
         if type(data) is str:
             data = json.loads(data)
 
-        players = [Player.from_json(p) for p in data["players"]] # recreate players
-        table = cls(players) # construct table
+        table = cls() # construct table
 
+        table.players = [Player.from_json(p) for p in data["players"]] # recreate players
         table.deck = Deck.from_json(data["deck"]) # recreate deck
         table.winners = [Player.from_json(p) for p in data["winners"]] # recreate winners
         table.attack_state = {

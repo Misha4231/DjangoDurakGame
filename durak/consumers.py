@@ -102,7 +102,7 @@ class GameConsumer(WebsocketConsumer):
         # send initial state of game
         self.send(text_data=json.dumps({
             'type': 'game_state',
-            "state": self.table.to_safejson(self.player.id),
+            "state": self.table.to_safejson(str(self.player.id)),
             "player_id": str(self.player.id)
         }))
 

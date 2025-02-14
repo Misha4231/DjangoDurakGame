@@ -51,4 +51,4 @@ class Player:
 
     @classmethod
     def from_json(cls, data: dict):
-        return cls(data['id'], data['name'], data['hand'])
+        return cls(data['name'], data['id'], data['hand'])

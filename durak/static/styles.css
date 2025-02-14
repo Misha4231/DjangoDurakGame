@@ -197,3 +197,12 @@ footer * {
     left: 50%;
     transform: translateX(-50%);
 }
+
+#deck {
+    position: absolute;
+    right: 400px;
+    top: 25px;
+}
+img.play-card {
+    width: 200px;
+}

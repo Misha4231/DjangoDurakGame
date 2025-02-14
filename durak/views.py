@@ -68,19 +68,20 @@ def start_durakgame(request):
     room = player.room
     players = Player.objects.filter(room=room).all() # all players
 
-    # construct list of players for engine
-    engine_players: list[EnginePlayer.Player] = []
-    for p in players:
-        p = EnginePlayer.Player(str(p), str(p.id))
-        engine_players.append(p)
-    # create table object
-    table = EngineTable.Table(engine_players)
+    if room.game_state == {}: # if game state is empty
+        # construct list of players for engine
+        engine_players: list[EnginePlayer.Player] = []
+        for p in players:
+            p = EnginePlayer.Player(str(p), str(p.id))
+            engine_players.append(p)
+        # create table object
+        table = EngineTable.Table(engine_players)
 
-    # save table state to database
-    room.game_state = table.to_json()
-    room.save()
+        # save table state to database
+        room.game_state = table.to_json()
+        room.save()
 
-    indexed_players = [
+    indexed_players = [ # indexing players (despite requesting one) to easily display them
         {"player": p, "index": i} for i, p in enumerate([p for p in players if p.id != player.id])
     ]
     return render(request, 'durak_game.html', {'room': room, 'indexed_players': indexed_players, 'player': player})
