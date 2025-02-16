@@ -37,6 +37,9 @@ class Card:
 
     @classmethod
     def from_string(cls, str_representation: str): # construct card from string representation
+        if str_representation == 'None':
+            return None
+
         str_representation = str_representation.upper()
 
         if Card.str_separator not in str_representation: # check if string is valid
@@ -50,3 +53,12 @@ class Card:
         suit = parts[1]
 
         return cls(CardSuit(CardSuit[suit]), CardRank(CardRank[rank])) # call constructor with enum values
+
+    def __eq__(self, other):
+        if not isinstance(other, Card):
+            return False
+
+        return self.__suit == other.__suit and self.__rank == other.__rank
+
+    def __hash__(self):
+        return hash(str(self))

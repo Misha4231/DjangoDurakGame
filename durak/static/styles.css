@@ -68,6 +68,30 @@ footer * {
     display: flex;
     justify-content: center;
 }
+#popup-messages-wrapper {
+    position: absolute;
+    display: flex;
+    z-index: 3;
+    flex-direction: column;
+    gap: 10px;
+
+    width: auto;
+    height: auto;
+    right: 50px;
+    bottom: 20px;
+}
+.popup-message {
+    width: 100%;
+    padding: 5px 20px;
+    color: white;
+    text-align: left;
+}
+.success-message {
+    background-color: green;
+}
+.failure-message {
+    background-color: red;
+}
 .start-game-card {
     background-color: rgba(32, 32, 32, 0.8);
     padding: 35px;
@@ -169,6 +193,9 @@ footer * {
 }
 .player-wrapper .player-name {
     position: absolute;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
 }
  /* top */
 .game-table #player-0-wrapper {
@@ -202,13 +229,25 @@ footer * {
 }
  /* bottom */
 .game-table #player-me-wrapper {
-    bottom: 140px;
+    bottom: 130px;
     left: 50%;
     transform: translateX(-50%);
     flex-direction: column;
 }
 .game-table #player-me-wrapper .player-name {
+    bottom: 10px;
+}
+.game-table #player-me-wrapper #action-button {
+    position: relative;
     bottom: 5px;
+    padding: 1px 41px;
+    cursor: pointer;
+    background-color: #9f8a30;
+    color: white;
+    outline: none;
+    border: none;
+    border-radius: 5px;
+    display: none;
 }
 
 #deck {
@@ -228,13 +267,34 @@ img.play-card.selected-card {
 }
 
 #play-zone {
-    width: 65%;
-    height: 45%;
+    width: 60%;
+    height: 40%;
     background-color: rgb(126, 126, 126, 0.3);
     margin: auto;
     border: #242424 2px dashed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 30px;
+    padding: 10px;
 }
 #play-zone.highlighted {
     background-color: rgba(172, 169, 169, 0.3);
     border: #cdb833 2px dashed;
+}
+.attack-slot {
+    display: flex;
+    width: min-content;
+    height: min-content;
+    position: relative;
+}
+.attack-slot.highlighted {
+    background-color: rgba(172, 169, 169, 0.3);
+    border: #d32b1c 3px dashed;
+}
+.attack-slot .play-card:nth-child(2) {
+    position: absolute;
+    right: -20px;
+    z-index: 2;
 }

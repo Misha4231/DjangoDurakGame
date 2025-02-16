@@ -8,21 +8,29 @@
         {% for p in indexed_players %}
             <div class="player-wrapper" id="player-{{ p.index }}-wrapper" data-id="{{ p.player.id }}">
                 <div class="player-hand"></div>
-                <h3 class="player-name">{{ p.player }}</h3>
+                <div class="player-name">
+                    <h3 class="name">{{ p.player }}</h3>
+                    <span class="current-role"></span>
+                </div>
             </div>
         {% endfor %}
 
         <div id="deck">
             <h2>Deck</h2>
+            <div id="deck-images"></div>
         </div>
 
         <div class="player-wrapper" id="player-me-wrapper" data-id="{{ player.id }}">
-            <h3 class="player-name">You</h3>
+            <div class="player-name">
+                <h3 class="name">You</h3>
+                <span class="current-role"></span>
+            </div>
+            <button id="action-button">Take</button>
+
             <div class="player-hand"></div>
         </div>
 
         <div id="play-zone">
-
         </div>
     </div>
 {% endblock %}

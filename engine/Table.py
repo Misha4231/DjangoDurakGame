@@ -12,6 +12,9 @@ class Table:
             self.attack_state = None
             self.refill_players_order = None
             self.__turn = None
+            self.defender_hand_starting_len = None
+            self.finished_player_ids = None
+            self.defender_takes = None
 
             return
 
@@ -47,6 +50,10 @@ class Table:
         if turn_candidate is not None:
             self.__turn = turn_candidate
 
+        self.defender_hand_starting_len = 6 # how many cards defender has at the beginning of attack
+        self.finished_player_ids: list[str] = [] # array of player ids who don't want to throw any additional cards
+        self.defender_takes = False # determines if defender wants to take all cards
+
     def get_turn(self) -> int: # get playing player index
         return self.__turn
 
@@ -66,8 +73,8 @@ class Table:
         self.attack_state[card] = None
 
         self.refill_players_order[player] = None # store order to properly refill cards
-
         self.attacks_number += 1
+        self.defender_hand_starting_len = self.players[self.get_next_turn()].hands_len()
 
     def defend(self, bottom_card: Card, defender_card: Card): # defender should defend from cards given to him (or take them)
         defender = self.players[self.get_next_turn()]
@@ -83,12 +90,14 @@ class Table:
         if defender_card.get_suit() == bottom_card.get_suit():
             if defender_card.get_rank().value < bottom_card.get_rank().value:
                 raise ValueError("Defender card has lower rank than the bottom one.")
-        elif defender_card.get_suit() != self.deck.get_trump().get_suit() and bottom_card.get_suit() == self.deck.get_trump().get_suit():
-            raise ValueError("Can't beat trump suited card with no trump card.")
+        elif defender_card.get_suit() != self.deck.get_trump().get_suit() and defender_card.get_suit() != bottom_card.get_suit():
+            raise ValueError("Given card has not valid suit.")
 
         # put card on table
         defender.throw_card(defender_card)
         self.attack_state[bottom_card] = defender_card
+
+        self.end_attack_if_possible()
 
     def throw_additional(self, throwing_player_id: str, card: Card): # players can throw more cards with the same suit as was before in the attack to defender
         defender = self.players[self.get_next_turn()]
@@ -96,7 +105,7 @@ class Table:
             raise ValueError("Defender cannot throw additional cards.")
 
         # according to rules, number of cards in one attack can't be more than number of cards in defender's hand. Maximum cards on table count is 5 (hand length - 1) if attack is first
-        if len(self.attack_state) == defender.hands_len() - (1 if self.attacks_number == 1 else 0):
+        if len(self.attack_state) == self.defender_hand_starting_len - (1 if self.attacks_number == 1 else 0):
             raise ValueError("The maximum number of cards on the table was already reached.")
 
         throwing_player = self.search_player(throwing_player_id)
@@ -104,6 +113,12 @@ class Table:
             raise ValueError("Player with given id not exist")
         if not throwing_player.have_card(card): # validate if user actually have given card in hand
             raise ValueError("Cannot throw a card that is not in player's hand.")
+
+        if len(self.attack_state) == 0: # throwing additional is only allowed after attacker plays turn
+            raise ValueError("Cannot throw additional cards while attack didn't started yet.")
+
+        if throwing_player_id in self.finished_player_ids:
+            raise ValueError("You confirmed that you finished with throwing additional cards..")
 
         # according to rules, additional thrown card must have the same rank as one laying on table already (i.e. inside attack_state map)
         contain_same_ranked_card = False
@@ -134,12 +149,11 @@ class Table:
 
     def end_attack(self, defender_picked_up: bool): # should be called when attack is over
         # getting ready to refill hands before self.__turn messes up
-        players_to_refill: list[Player] = list[Player](self.refill_players_order.keys()) # get order
+        players_to_refill = list(self.refill_players_order.keys()) # get order
 
         # append defender at the end
         defender = self.players[self.get_next_turn()]
         players_to_refill.append(defender)
-
 
         if defender_picked_up: # go to next player if defender picked up the cards
             self.take_cards()
@@ -154,9 +168,45 @@ class Table:
             while player.hands_len() < 6 and self.deck.cards_available() > 0: # while player have less than 6 cards and some cards left in deck
                 player.take_card(self.deck.take_card())
 
+            player_index = self.players.index(self.search_player(player.get_id()))  # get player index in list to change data
+            self.players[player_index] = player
+
             if player.hands_len() == 0: # Players win if no cards left in hand and deck
-                self.winners.append(player)
-                self.players.remove(player)
+                self.winners.append(self.players[player_index])
+                self.players.remove(self.players[player_index])
+
+                if len(self.players) > 1: # change turn if winner found
+                    self.__turn = player_index + 1 if (player_index + 1) < len(self.players) else 0
+
+        # zero all
+        self.finished_player_ids = []
+        self.defender_takes = False
+        self.refill_players_order = {}
+
+    # should be called when defender wants to take cards
+    def defender_take_cards(self):
+        self.defender_takes = True
+        self.end_attack_if_possible()
+
+    def player_finished(self, player_id: str):
+        self.finished_player_ids.append(player_id)
+        self.end_attack_if_possible()
+
+    # check everything to end attack and end if possible
+    def end_attack_if_possible(self):
+        if len(self.finished_player_ids) == len(self.players) - 1: # if every player despite defender are finished
+            every_card_beaten = True
+            for b_card, t_card in self.attack_state.items():
+                if t_card is None:
+                    every_card_beaten = False
+                    break
+
+            # to end attack every card should be beaten or defender want to take cards
+            if every_card_beaten:
+                self.end_attack(False)
+            elif self.defender_takes:
+                self.end_attack(True)
+
 
     def search_player(self, player_id: str): # search the player with given id
         for player in self.players:
@@ -171,11 +221,14 @@ class Table:
             "deck": self.deck.to_json(sensible_data=True),
             "players": [p.to_json(player_id) for p in self.players],
             'winners': [p.to_json(player_id) for p in self.winners],
-            "attack_state": [[str(bottom_c), str(top_c)] for top_c, bottom_c in self.attack_state.items()],
+            "attack_state": [[str(bottom_c), str(top_c)] for bottom_c, top_c in self.attack_state.items()],
             "attacks_number": self.attacks_number,
             "turn": self.get_turn(),
             'next_turn': self.get_next_turn(),
             "refill_players_order": [p.to_json() for p in self.refill_players_order.keys()],
+            'defender_hand_starting_len': self.defender_hand_starting_len,
+            'finished_player_ids': self.finished_player_ids,
+            'defender_takes': self.defender_takes,
         }
 
         return data
@@ -185,11 +238,14 @@ class Table:
             "deck": self.deck.to_json(),
             "players": [p.to_json() for p in self.players],
             'winners': [p.to_json()  for p in self.winners],
-            "attack_state": [[str(bottom_c), str(top_c)] for top_c, bottom_c in self.attack_state.items()],
+            "attack_state": [[str(bottom_c), str(top_c)] for bottom_c, top_c in self.attack_state.items()],
             "attacks_number": self.attacks_number,
             "turn": self.get_turn(),
             'next_turn': self.get_next_turn(),
             "refill_players_order": [p.to_json() for p in self.refill_players_order.keys()], # keys only, because dict is used as ordered set
+            'defender_hand_starting_len': self.defender_hand_starting_len,
+            'finished_player_ids': self.finished_player_ids,
+            'defender_takes': self.defender_takes,
         }
 
         return data
@@ -215,6 +271,9 @@ class Table:
         table.refill_players_order = {
             Player.from_json(p): None for p in data["refill_players_order"]
         }
+        table.defender_hand_starting_len = data["defender_hand_starting_len"]
+        table.finished_player_ids = data["finished_player_ids"]
+        table.defender_takes = data["defender_takes"]
 
         return table
 
