@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'durak.apps.DurakConfig',
+    'users.apps.UsersConfig',
     'channels', # handle WebSockets
     'daphne', # protocol server for ASGI and ASGI-HTTP
     
