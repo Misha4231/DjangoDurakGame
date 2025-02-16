@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign up{% endblock %}
+
+{% block content %}
+    <div class="auth-form-page">
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+
+            <fieldset>
+                {{ form }}
+            </fieldset>
+
+            <button class="submit-button" type="submit">Register</button>
+            <span>Already have an account? <a href="{% url 'login' %}" class="green-link">Sign in</a></span>
+        </form>
+    </div>
+{% endblock %}
+
+{% block script %}
+{% endblock %}

@@ -306,3 +306,14 @@ img.play-card.selected-card {
     right: -20px;
     z-index: 2;
 }
+
+.auth-form-page {
+    max-width: 500px;
+    margin: auto;
+}
+.auth-form-page fieldset {
+    margin: 20px 0;
+}
+.auth-form-page .submit-button {
+    margin-bottom: 20px;
+}
