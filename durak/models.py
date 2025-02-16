@@ -23,6 +23,7 @@ class Player(models.Model):
     user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
     anonymous_user = models.ForeignKey(AnonymousUser, null=True, blank=True, on_delete=models.CASCADE)
     room = models.ForeignKey(Room, null=False, blank=False, on_delete=models.CASCADE)
+    is_connected = models.BooleanField(default=False) # is player connected to game socket
     
     def __str__(self):
         if self.user:

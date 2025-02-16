@@ -175,7 +175,7 @@ class Table:
                 self.winners.append(self.players[player_index])
                 self.players.remove(self.players[player_index])
 
-                if len(self.players) > 1: # change turn if winner found
+                if len(self.players) > 1: # change turn
                     self.__turn = player_index + 1 if (player_index + 1) < len(self.players) else 0
 
         # zero all
@@ -206,10 +206,59 @@ class Table:
                 self.end_attack(False)
             elif self.defender_takes:
                 self.end_attack(True)
+    '''
+            self.deck = None
+            self.players = None
+            self.winners = None
+            self.attack_state = None
+            self.refill_players_order = None
+            self.__turn = None
+            self.defender_hand_starting_len = None
+            self.finished_player_ids = None
+            self.defender_takes = None
+    '''
+    # removes player from the game
+    def remove_player(self, player_id: str):
+        # get player
+        player = self.search_player(player_id)
 
+        if player is None: # remove player from winners list
+            winner = self.search_winner(player_id)
+            self.winners.remove(winner)
+
+            return
+
+        player_index = self.players.index(player)
+        if (player_index < len(self.players) and self.get_next_turn() < len(self.players)) and self.players[player_index] == self.players[self.get_next_turn()]: # player is defender
+            self.attack_state.clear()
+
+        for c in self.players[player_index].get_hand(): # put cards from hand to the bottom of the deck
+            self.deck.add_card_left(self.players[player_index].throw_card(c))
+
+        if self.players[player_index] in self.refill_players_order:
+            self.refill_players_order.pop(self.players[player_index]) # remove from refill set
+
+        if len(self.players) > 1:  # change turn
+            self.__turn = player_index + 1 if (player_index + 1) < len(self.players) else 0
+
+        if player_id in self.finished_player_ids:
+            self.finished_player_ids.remove(player_id)
+
+        self.players.remove(player)
+
+        if len(self.players) == 1: # if only one player left
+            self.winners.append(self.players[0]) # he is a winner
+            self.players.remove(self.players[0])
 
     def search_player(self, player_id: str): # search the player with given id
         for player in self.players:
+            if player.get_id() == player_id:
+                return player
+
+        return None
+
+    def search_winner(self, player_id: str): # search the winner with given id
+        for player in self.winners:
             if player.get_id() == player_id:
                 return player
 

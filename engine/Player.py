@@ -33,6 +33,11 @@ class Player:
     def have_card(self, card: Card) -> bool:
         return card in self.__hand
 
+    def __eq__(self, other) -> bool:
+        return self.get_id() == other.get_id() and self.get_hand() == other.get_hand() and self.player_name == other.player_name
+
+    def __hash__(self):
+        return hash(str(self))
 
     def to_json(self, player_id = None): # convert user data to dict
         data = {

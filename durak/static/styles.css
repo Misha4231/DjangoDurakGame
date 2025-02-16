@@ -182,6 +182,14 @@ footer * {
     justify-content: center;
     align-content: center;
 }
+#leave-game-button {
+    position: absolute;
+    height: 80px;
+    width: 200px;
+    bottom: 20px;
+    left: 30px;
+    display: none;
+}
 .player-wrapper {
     position: absolute;
     display: flex;

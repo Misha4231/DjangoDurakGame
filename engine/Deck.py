@@ -35,6 +35,11 @@ class Deck:
 
         return self.__deck.pop()
 
+    def add_card_left(self, card: Card): # add cards to the bottom of the deck
+        trump_card = self.__deck.popleft() # trump should be always at the bottom
+        self.__deck.appendleft(card)
+        self.__deck.appendleft(trump_card)
+
     def to_json(self, sensible_data = False):
         data = {
             'length': self.cards_available(),

@@ -135,6 +135,10 @@ function loadPage() {
                 }
             }
         }
+    });
+
+    document.getElementById('leave-game-button').addEventListener('click', () => {
+        window.location.href = '/';
     })
 }
 
@@ -188,13 +192,14 @@ function drawDeck(deck) {
     let deckContainer = document.getElementById("deck-images"); // get container where all images are going to be dropped at
     deckContainer.innerHTML = '';
 
-    // display trump card (the only one that is accessible)
+
     if (deck.length !== 0) {
+        // display trump card (the only one that is accessible)
         let trumpCard = createCardElement(deck.trump);
         trumpCard.style.position = 'absolute';
         trumpCard.style.transform = `translateX(-80px) rotate(90deg)`;
         deckContainer.appendChild(trumpCard);
-    } else {
+    } else { // if deck is empty, remove it from screen
         document.getElementById('deck').innerHTML = '';
     }
 
@@ -339,6 +344,20 @@ function drawResults() {
     }
 }
 
+// when the game is over or player became winner, he has the ability to leave game
+function drawLeaveButton() {
+    let leaveButton = document.getElementById('leave-game-button');
+
+    let isWinner = false;
+    gameState.state.winners.forEach(w => {
+        if (w.id === gameState.player_id) isWinner = true;
+    })
+
+    if (gameState.state.players.length <= 1 || isWinner) {
+        leaveButton.style.display = 'block';
+    }
+}
+
 var gameSocket = null;
 function connect() {
     gameSocket = new WebSocket("ws://" + window.location.host + "/ws/durak_game/"); // connect to game web socket
@@ -352,17 +371,20 @@ function connect() {
             if (gameState?.last_action?.type === 'play_turn' && gameState.player_id === gameState.state.players[gameState.state.turn].id) rollBackDraggingCard();
             if (gameState?.last_action?.type === 'throw_additional' && gameState.player_id === gameState?.last_action?.player_id) rollBackDraggingCard();
             if (gameState?.last_action?.type === 'defend' && gameState.player_id === gameState?.last_action?.player_id) rollBackDraggingCard();
-
+            if (gameState?.last_action?.type === 'player_removed') { // remove player's hand
+                document.getElementById(playerContainers[gameState.last_action.player_id]).innerHTML = '';
+            }
 
             drawDeck(gameState.state.deck); // draw deck
+
             gameState.state.players.forEach(p => { // draw each player's hand
                 drawHand(p);
             })
             drawTurn(gameState.state.players, gameState.state.turn, gameState.state.next_turn); // add marks to attacker and defender names
             drawPlayZoneContent(gameState.state.attack_state) // draw play zone
             drawActionButton();
-
             drawResults();
+            drawLeaveButton();
 
             loadPage(); // update bindings after loading state
         }
