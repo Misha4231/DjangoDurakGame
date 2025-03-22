@@ -8,7 +8,7 @@ from .Card import *
 class Deck:
     def __init__(self, deck: (list[Card]) | None = None, trump: (Card | None)= None):
         if deck is None:
-            self.__deck = deque() # create stack because cards are always taken from the top
+            self.__deck = [] # create stack because cards are always taken from the top
 
             # full stack by using enums
             for suit_i in range(CardSuit.HEARTS.value, CardSuit.SPADES.value + 1):
@@ -18,9 +18,9 @@ class Deck:
                     )
 
             random.shuffle(self.__deck) # shuffle deck
-            self.__trump = self.__deck[0]  # select trump (card with most valuable suit)
+            self.__trump = Card(self.__deck[0].get_suit(), self.__deck[0].get_rank())  # select trump (card with most valuable suit)
         else:
-            self.__deck = deque(deck)
+            self.__deck = deck
             self.__trump = trump
 
     def get_trump(self) -> Card: # trump getter
@@ -36,9 +36,8 @@ class Deck:
         return self.__deck.pop()
 
     def add_card_left(self, card: Card): # add cards to the bottom of the deck
-        trump_card = self.__deck.popleft() # trump should be always at the bottom
-        self.__deck.appendleft(card)
-        self.__deck.appendleft(trump_card)
+        # trump should be always at the bottom
+        self.__deck.insert(1, card)
 
     def to_json(self, sensible_data = False):
         data = {
@@ -46,7 +45,7 @@ class Deck:
             'trump': str(self.__trump),
         }
         if not sensible_data: # if data is for example for database storing, then add all cards
-            data['deck'] = [str(c) for c in reversed(self.__deck)]
+            data['deck'] = [str(c) for c in self.__deck]
 
         return data
 
