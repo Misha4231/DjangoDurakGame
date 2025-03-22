@@ -1,5 +1,8 @@
 # Durak Game (Django + Django Channels)
 
+## 🎥 Preview
+![preview](./preview.gif)
+
 ## 📌 Overview
 This project is an online **Durak card game** built with **Django** and **Django Channels**. It features real-time gameplay using **WebSockets** without external message brokers like Redis, relying instead on Django Channels' in-memory layer.
 
