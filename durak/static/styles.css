@@ -265,9 +265,11 @@ footer * {
 img.play-card {
     width: 80px;
     z-index: 1;
+    pointer-events: none;
 }
 .game-table #player-me-wrapper img.play-card {
     cursor: pointer;
+    pointer-events: all;
 }
 img.play-card.selected-card {
     z-index: 2;

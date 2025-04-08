@@ -192,7 +192,6 @@ function drawDeck(deck) {
     let deckContainer = document.getElementById("deck-images"); // get container where all images are going to be dropped at
     deckContainer.innerHTML = '';
 
-
     if (deck.length !== 0) {
         // display trump card (the only one that is accessible)
         let trumpCard = createCardElement(deck.trump);
