@@ -190,6 +190,7 @@ function defendCard(bottomCard, topCard) {
 // draw deck coming from the game state
 function drawDeck(deck) {
     let deckContainer = document.getElementById("deck-images"); // get container where all images are going to be dropped at
+    if (!deckContainer) return;
     deckContainer.innerHTML = '';
 
     if (deck.length !== 0) {
